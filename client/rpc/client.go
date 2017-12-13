@@ -108,7 +108,7 @@ func Permissions(nodeClient client.NodeClient, keyClient keys.KeyClient, pubkey,
 	if err != nil {
 		return nil, err
 	}
-	var args ptypes.PermArgs
+	var args *ptypes.PermArgs
 	switch permFunc {
 	case "setBase":
 		addr, pF, err := decodeAddressPermFlag(argsS[0], argsS[1])
@@ -126,13 +126,13 @@ func Permissions(nodeClient client.NodeClient, keyClient keys.KeyClient, pubkey,
 		} else {
 			return nil, fmt.Errorf("Unknown value %s", argsS[2])
 		}
-		args = &ptypes.SetBaseArgs{addr, pF, value}
+		args = ptypes.SetBaseArgs(addr, pF, value)
 	case "unsetBase":
 		addr, pF, err := decodeAddressPermFlag(argsS[0], argsS[1])
 		if err != nil {
 			return nil, err
 		}
-		args = &ptypes.UnsetBaseArgs{addr, pF}
+		args = ptypes.UnsetBaseArgs(addr, pF)
 	case "setGlobal":
 		pF, err := ptypes.PermStringToFlag(argsS[0])
 		if err != nil {
@@ -146,21 +146,21 @@ func Permissions(nodeClient client.NodeClient, keyClient keys.KeyClient, pubkey,
 		} else {
 			return nil, fmt.Errorf("Unknown value %s", argsS[1])
 		}
-		args = &ptypes.SetGlobalArgs{pF, value}
+		args = ptypes.SetGlobalArgs(pF, value)
 	case "addRole":
 		address, err := addressFromHexString(argsS[0])
 		if err != nil {
 			return nil, err
 		}
-		args = &ptypes.AddRoleArgs{address, argsS[1]}
+		args = ptypes.AddRoleArgs(address, argsS[1])
 	case "removeRole":
 		address, err := addressFromHexString(argsS[0])
 		if err != nil {
 			return nil, err
 		}
-		args = &ptypes.RmRoleArgs{address, argsS[1]}
+		args = ptypes.RemoveRoleArgs(address, argsS[1])
 	default:
-		return nil, fmt.Errorf("Invalid permission function for use in PermissionsTx: %s", permFunc)
+		return nil, fmt.Errorf("invalid permission function for use in PermissionsTx: %s", permFunc)
 	}
 	// args := snativeArgs(
 	tx := txs.NewPermissionsTxWithNonce(pub, args, nonce)
